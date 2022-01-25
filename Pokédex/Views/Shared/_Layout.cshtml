@@ -1,0 +1,1103 @@
+﻿@using Pokédex.Models;
+
+@model PageModel
+
+<style>
+    .background-container {
+        background: #1A1A1D;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        overflow-x: hidden;
+    }
+
+    .section-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    .header {
+        position: fixed;
+        width: 100%;
+        height: 12%;
+        background: @Model.cssProperties.lightColor;
+    }
+
+    h1 {
+        position: absolute;
+        font-size: 60px;
+        font-family: 'OCR A';
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-style: italic;
+        color: white;
+    }
+
+    .hamburger {
+        position: fixed;
+        width: 60px;
+        height: 50px;
+        border: 1px solid black;
+        border-radius: 8px;
+        background: @Model.cssProperties.dullColor;
+        top: 6%;
+        left: 92%;
+        transform: translate(-50%, -50%);
+        z-index: 2;
+    }
+
+    .hamburger-bar {
+        width: 30px;
+        height: 5px;
+        position: absolute;
+        background: white;
+        left: 50%;
+    }
+
+    .menu {
+        position: fixed;
+        width: 45%;
+        height: 75%;
+        border-radius: 8px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        animation-fill-mode: forwards;
+        animation-duration: 2s;
+        background: rgb(50, 50, 50);
+        visibility: hidden;
+        z-index: 3;
+        text-align: center;
+        overflow-y: auto;
+    }
+    .menu::-webkit-scrollbar{
+        display: none;
+    }
+
+    .menu-item {
+        font-size: 20px;
+        font-family: 'OCR A';
+        color: white;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .menu-backdrop {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        visibility: hidden;
+        z-index: 3;
+        backdrop-filter: brightness(50%);
+    }
+
+    @@keyframes menu-fade-in {
+        from {
+            opacity: 0;
+            top: 25%;
+        }
+
+        to {
+            opacity: 1;
+            top: 50%;
+        }
+    }
+
+    @@keyframes menu-fade-out {
+        from {
+            opacity: 1;
+            top: 50%;
+        }
+
+        to {
+            opacity: 0;
+            top: 25%;
+        }
+    }
+
+    @@keyframes menu-backdrop-fade-in {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: .6;
+        }
+    }
+
+    @@keyframes menu-backdrop-fade-out {
+        from {
+            opacity: .6;
+        }
+
+        to {
+            opacity: 0;
+        }
+    }
+
+    .exit-button {
+        color: white;
+        position: fixed;
+        top: 5%;
+        left: 95%;
+        transform: translate(-50%, -50%);
+        border: none;
+        outline: none;
+        background: none;
+    }
+
+        .exit-button:hover {
+            color: gray;
+        }
+
+        .exit-button:focus {
+            border: none;
+            outline: none;
+        }
+
+    .response-button {
+        width: 12%;
+        height: 9%;
+        border: 1px solid black;
+        border-radius: 6px;
+        color: white;
+        background: @Model.cssProperties.dullColor;
+        left: 20%;
+        position: absolute;
+        transform: translateX(-50%);
+        font-family: 'OCR A';
+    }
+
+        .response-button:hover {
+            background: rgb(140, 90, 90);
+        }
+
+    .sliding-info {
+        position: absolute;
+        display: inline-block;
+        overflow: visible;
+        background-color: @Model.cssProperties.darkColor;
+        width: 600px;
+        height: 100%;
+        left: 683px;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        animation-fill-mode: forwards;
+        animation-duration: 0.25s;
+    }
+
+        .sliding-info:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: @Model.cssProperties.darkColor;
+            transform-origin: bottom right;
+            transform: skew(4deg);
+            z-index: -1;
+        }
+
+        .sliding-info:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: @Model.cssProperties.darkColor;
+            transform-origin: top right;
+            transform: skew(4deg);
+            z-index: -1;
+        }
+
+    @@keyframes slide-left-from-center {
+        from {
+            left: 683px;
+            width: 600px;
+            height: 100%;
+        }
+
+        to {
+            left: 115px;
+            width: 450px;
+            height: 75%;
+        }
+    }
+
+    @@keyframes slide-left-to-center {
+        from {
+            left: 1251px;
+            width: 450px;
+            height: 75%;
+        }
+
+        to {
+            left: 683px;
+            width: 600px;
+            height: 100%;
+        }
+    }
+
+    @@keyframes slide-left-to-offscreen {
+        from {
+            left: 115px;
+            width: 450px;
+            height: 75%;
+        }
+
+        to {
+            left: -371px;
+            width: 450px;
+            height: 75%;
+        }
+    }
+
+    @@keyframes slide-left-from-offscreen {
+        from {
+            left: 1737px;
+            width: 450px;
+            height: 75%;
+        }
+
+        to {
+            left: 1251px;
+            width: 450px;
+            height: 75%;
+        }
+    }
+
+    @@keyframes slide-right-to-center {
+        from {
+            left: 115px;
+            width: 450px;
+            height: 75%;
+        }
+
+        to {
+            left: 683px;
+            width: 600px;
+            height: 100%;
+        }
+    }
+
+    @@keyframes slide-right-from-center {
+        from {
+            left: 683px;
+            width: 600px;
+            height: 100%;
+        }
+
+        to {
+            left: 1251px;
+            width: 450px;
+            height: 75%;
+        }
+    }
+
+    @@keyframes slide-right-from-offscreen {
+        from {
+            left: -371px;
+            width: 450px;
+            height: 75%;
+        }
+
+        to {
+            left: 115px;
+            width: 450px;
+            height: 75%;
+        }
+    }
+
+    @@keyframes slide-right-to-offscreen {
+        from {
+            left: 1251px;
+            width: 450px;
+            height: 75%;
+        }
+
+        to {
+            left: 1737px;
+            width: 450px;
+            height: 75%;
+        }
+    }
+
+    @@keyframes slide-to-most-left {
+        0% {
+            left: 1737px;
+            opacity: 0;
+        }
+
+        99% {
+            left: -371px;
+            opacity: 0;
+        }
+
+        100% {
+            left: -371px;
+            opacity: 1;
+        }
+    }
+
+    @@keyframes slide-to-most-right {
+        0% {
+            left: -371px;
+            opacity: 0;
+        }
+
+        99% {
+            left: 1737px;
+            opacity: 0;
+        }
+
+        100% {
+            left: 1737px;
+            opacity: 1;
+        }
+    }
+
+    @@keyframes slide-to-pile {
+        from {
+            left: -400px;
+        }
+        to {
+            left: -600px;
+        }
+    }
+
+    @@keyframes hide-info{
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+
+    @@keyframes show-info{
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .name-container {
+        position: absolute;
+        left: 45%;
+        top: 3%;
+        transform: translateX(-50%);
+        color: white;
+        font-family: Courier New, Courier, monospace;
+        font-size: 36px;
+    }
+
+    .type-container {
+        position: absolute;
+        border: 1px solid black;
+        border-radius: 6px;
+        height: 4%;
+        background-color: @Model.cssProperties.lightColor;
+        color: white;
+        font-family: Courier New, Courier, monospace;
+        text-align: center;
+        animation-fill-mode: forwards;
+        animation-duration: 0.25s;
+        opacity: 0;
+        padding-left: 2%;
+        padding-right: 2%;
+    }
+
+    .detail-container {
+        position: absolute;
+        color: white;
+        font-family: Courier New, Courier, monospace;
+        animation-fill-mode: forwards;
+        animation-duration: 0.25s;
+        opacity: 0;
+        width: 40%;
+    }
+
+    .stat-container {
+        height: 40%;
+        width: 90%;
+        background-color: @Model.cssProperties.dullColor;
+        position: absolute;
+        top: 75%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        animation-fill-mode: forwards;
+        animation-duration: 0.25s;
+        opacity: 0;
+    }
+
+        .stat-container:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: @Model.cssProperties.dullColor;
+            transform-origin: bottom right;
+            transform: skew(4deg);
+            z-index: -1;
+        }
+
+        .stat-container:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: @Model.cssProperties.dullColor;
+            transform-origin: top right;
+            transform: skew(4deg);
+            z-index: -1;
+        }
+
+    .stat-bar-container {
+        width: 300px;
+        height: 40px;
+    }
+
+    .stat-bar{
+        height: 35%;
+        border-radius: 8px;
+        background: @Model.cssProperties.lightColor;
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .cooldown-div {
+        position: absolute;
+        top: -30px;
+        left: -30px;
+        width: 5px;
+        height: 5px;
+        background-color: rgb(0, 255, 0);
+    }
+
+    .data-container{
+        width: 50%;
+        height: 70%;
+        border: 1px solid white;
+        position: absolute;
+        top: 20%;
+        left: 45%;
+        visibility: hidden;
+        overflow-y: auto;
+    }
+    .data-container::-webkit-scrollbar{
+        width: 0;
+        background: transparent;
+    }
+
+    .data-tile{
+        position: relative;
+        width: 25%;
+        height: 10%;
+        float: left;
+    }
+        .data-tile p {
+            position: absolute;
+            color: white;
+            font-family: Courier New, Courier, monospace;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            text-align: center;
+        }
+
+    td {
+        padding-left: 10px;
+        padding-right: 10px;
+        font-family: Courier New, Courier, monospace;
+    }
+
+    th {
+        font-family: Courier New, Courier, monospace;
+    }
+    
+</style>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Pokédex</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <div class="container body-content">
+        @RenderBody()
+    </div>
+    <div class="background-container">
+        <div class="cooldown-div"></div>
+        <div class="menu-backdrop">
+            <div class="menu">
+                <button class="exit-button">X</button>
+                <a href="@Url.Action("BugTypePage", "Home")" class="menu-item" style="top: 8%">Bug Types</a>
+                <a href="@Url.Action("ElectricTypePage", "Home")" class="menu-item" style="top: 16%">Electric Types</a>
+                <a href="@Url.Action("FightingTypePage", "Home")" class="menu-item" style="top: 24%">Fighting Types</a>
+                <a href="@Url.Action("FireTypePage", "Home")" class="menu-item" style="top: 32%">Fire Types</a>
+                <a href="@Url.Action("GrassTypePage", "Home")" class="menu-item" style="top: 40%">Grass Types</a>
+                <a href="@Url.Action("GroundTypePage", "Home")" class="menu-item" style="top: 48%">Ground Types</a>
+                <a href="@Url.Action("NormalTypePage", "Home")" class="menu-item" style="top: 56%">Normal Types</a>
+                <a href="@Url.Action("PoisonTypePage", "Home")" class="menu-item" style="top: 64%">Poison Types</a>
+                <a href="@Url.Action("PsychicTypePage", "Home")" class="menu-item" style="top: 72%">Psychic Types</a>
+                <a href="@Url.Action("RockTypePage", "Home")" class="menu-item" style="top: 80%">Rock Types</a>
+                <a href="@Url.Action("SpecialTypePage", "Home")" class="menu-item" style="top: 88%">Special Types</a>
+                <a href="@Url.Action("WaterTypePage", "Home")" class="menu-item" style="top: 96%">Water Types</a>
+            </div>
+        </div>
+        <button class="hamburger">
+            <div class="hamburger-bar" style="top: 25%; transform: translate(-50%, -50%)"></div>
+            <div class="hamburger-bar" style="top: 50%; transform: translate(-50%, -50%)"></div>
+            <div class="hamburger-bar" style="top: 75%; transform: translate(-50%, -50%)"></div>
+        </button>
+        <div class="section-container">
+            <div class="header">
+                <h1>@Model.pokemonList.ElementAt(0).type Types</h1>
+            </div>
+            <button class="response-button" id="pokemon-button" style="top: 20%">Pokémon</button>
+            <button class="response-button" id="move-button" style="top: 40%">Moves</button>
+            <button class="response-button" id="ability-button" style="top: 60%">Abilities</button>
+            <div id="pokemon-container" class="data-container" style="visibility: visible">
+                @foreach(var pokemon in Model.pokemonList)
+            {
+                <div class="data-tile"><p>@pokemon.name</p></div>
+            }
+            </div>
+            <div id="move-container" class="data-container">
+                @foreach(var move in Model.moveList)
+            {
+                <div class="data-tile"><p>@move</p></div>
+            }
+            </div>
+            <div id="ability-container" class="data-container">
+                @foreach(var ability in Model.abilityList)
+            {
+                <div class="data-tile"><p>@ability</p></div>
+            }
+            </div>
+        </div>
+        <div class="section-container">
+            <div id="panel-1" class="sliding-info" style="left: -371px; width: 450px; height: 75%">
+                <p class="name-container">@Model.pokemonList.ElementAt(0).name</p>
+                <p class="type-container" style="top: 3%; left: 5%; transform: translateX(-50%)">@Model.pokemonList.ElementAt(0).type.ToUpper()</p>
+                <p class="type-container" style="top: 3%; left: 90%; transform: translateX(-50%)">No.@Model.pokemonList.ElementAt(0).number</p>
+                <p class="detail-container" style="top: 20%; left: 0%">Species: @Model.pokemonList.ElementAt(0).species</p>
+                <p class="detail-container" style="top: 30%; left: 3%">Height: @Model.pokemonList.ElementAt(0).height</p>
+                <p class="detail-container" style="top: 40%; left: 6%">Ev Yield: @Model.pokemonList.ElementAt(0).evYield</p>
+                <p class="detail-container" style="top: 20%; left: 50%">Ability: @Model.pokemonList.ElementAt(0).ability</p>
+                <p class="detail-container" style="top: 30%; left: 53%">Weight: @Model.pokemonList.ElementAt(0).weight</p>
+                <p class="detail-container" style="top: 40%; left: 56%">Growth Rate: @Model.pokemonList.ElementAt(0).growthRate</p>
+                <div class="stat-container">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>HP</th>
+                                <td>@Model.pokemonList.ElementAt(0).hpStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width: @($"{Model.pokemonList.ElementAt(0).hpBar}%")"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(0).hpStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(0).hpStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Attack</th>
+                                <td>@Model.pokemonList.ElementAt(0).attackStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width: @($"{Model.pokemonList.ElementAt(0).attackBar}%")"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(0).attackStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(0).attackStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Defense</th>
+                                <td>@Model.pokemonList.ElementAt(0).defenseStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width: @($"{Model.pokemonList.ElementAt(0).defenseBar}%")"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(0).defenseStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(0).defenseStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Sp. Atk</th>
+                                <td>@Model.pokemonList.ElementAt(0).spAtkStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width:@Model.pokemonList.ElementAt(0).spAtkBar"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(0).spAtkStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(0).spAtkStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Sp. Def</th>
+                                <td>@Model.pokemonList.ElementAt(0).spDefStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width:@Model.pokemonList.ElementAt(0).spDefBar"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(0).spDefStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(0).spDefStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Speed</th>
+                                <td>@Model.pokemonList.ElementAt(0).speedStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width:@Model.pokemonList.ElementAt(0).speedBar"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(0).speedStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(0).speedStatMax</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="panel-2" class="sliding-info" style="left: 115px; width: 450px; height: 75%">
+                <p class="name-container">@Model.pokemonList.ElementAt(1).name</p>
+                <p class="type-container" style="top: 3%; left: 5%; transform: translateX(-50%)">@Model.pokemonList.ElementAt(1).type.ToUpper()</p>
+                <p class="type-container" style="top: 3%; left: 90%; transform: translateX(-50%)">No.@Model.pokemonList.ElementAt(1).number</p>
+                <p class="detail-container" style="top: 20%; left: 0%">Species: @Model.pokemonList.ElementAt(1).species</p>
+                <p class="detail-container" style="top: 30%; left: 3%">Height: @Model.pokemonList.ElementAt(1).height</p>
+                <p class="detail-container" style="top: 40%; left: 6%">Ev Yield: @Model.pokemonList.ElementAt(1).evYield</p>
+                <p class="detail-container" style="top: 20%; left: 50%">Ability: @Model.pokemonList.ElementAt(1).ability</p>
+                <p class="detail-container" style="top: 30%; left: 53%">Weight: @Model.pokemonList.ElementAt(1).weight</p>
+                <p class="detail-container" style="top: 40%; left: 56%">Growth Rate: @Model.pokemonList.ElementAt(1).growthRate</p>
+                <div class="stat-container">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>HP</th>
+                                <td>@Model.pokemonList.ElementAt(1).hpStat</td>
+                                <td>
+                                    <div class="stat-bar-container">
+                                        <div class="stat-bar" style="width: @($"{Model.pokemonList.ElementAt(1).hpBar}%")"></div>
+                                    </div>
+                                </td>
+                                <td>@Model.pokemonList.ElementAt(1).hpStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(1).hpStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Attack</th>
+                                <td>@Model.pokemonList.ElementAt(1).attackStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width: @($"{Model.pokemonList.ElementAt(1).attackBar}%")"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(1).attackStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(1).attackStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Defense</th>
+                                <td>@Model.pokemonList.ElementAt(1).defenseStat</td>
+                                <td>
+                                    <div class="stat-bar-container">
+                                        <div class="stat-bar" style="width: @($"{Model.pokemonList.ElementAt(1).defenseBar}%")"></div>
+                                    </div>
+                                </td>
+                                <td>@Model.pokemonList.ElementAt(1).defenseStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(1).defenseStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Sp. Atk</th>
+                                <td>@Model.pokemonList.ElementAt(1).spAtkStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width:@Model.pokemonList.ElementAt(1).spAtkBar"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(1).spAtkStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(1).spAtkStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Sp. Def</th>
+                                <td>@Model.pokemonList.ElementAt(1).spDefStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width:@Model.pokemonList.ElementAt(1).spDefBar"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(1).spDefStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(1).spDefStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Speed</th>
+                                <td>@Model.pokemonList.ElementAt(1).speedStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width:@Model.pokemonList.ElementAt(1).speedBar"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(1).speedStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(1).speedStatMax</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="panel-3" class="sliding-info">
+                <p class="name-container">@Model.pokemonList.ElementAt(2).name</p>
+                <p class="type-container" style="opacity: 1; top: 3%; left: 5%; transform: translateX(-50%)">@Model.pokemonList.ElementAt(2).type.ToUpper()</p>
+                <p class="type-container" style="opacity: 1; top: 3%; left: 90%; transform: translateX(-50%)">No.@Model.pokemonList.ElementAt(2).number</p>
+                <p class="detail-container" style="opacity: 1; top: 20%; left: 0%">Species: @Model.pokemonList.ElementAt(2).species</p>
+                <p class="detail-container" style="opacity: 1; top: 30%; left: 3%">Height: @Model.pokemonList.ElementAt(2).height</p>
+                <p class="detail-container" style="opacity: 1; top: 40%; left: 6%">Ev Yield: @Model.pokemonList.ElementAt(2).evYield</p>
+                <p class="detail-container" style="opacity: 1; top: 20%; left: 50%">Ability: @Model.pokemonList.ElementAt(2).ability</p>
+                <p class="detail-container" style="opacity: 1; top: 30%; left: 53%">Weight: @Model.pokemonList.ElementAt(2).weight</p>
+                <p class="detail-container" style="opacity: 1; top: 40%; left: 56%">Growth Rate: @Model.pokemonList.ElementAt(2).growthRate</p>
+                <div class="stat-container" style="opacity: 1;">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>HP</th>
+                                <td>@Model.pokemonList.ElementAt(2).hpStat</td>
+                                <td>
+                                    <div class="stat-bar-container">
+                                        <div class="stat-bar" style="width: @($"{Model.pokemonList.ElementAt(2).hpBar}%")"></div>
+                                    </div>
+                                </td>
+                                <td>@Model.pokemonList.ElementAt(2).hpStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(2).hpStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Attack</th>
+                                <td>@Model.pokemonList.ElementAt(2).attackStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width: @($"{Model.pokemonList.ElementAt(2).attackBar}%")"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(2).attackStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(2).attackStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Defense</th>
+                                <td>@Model.pokemonList.ElementAt(2).defenseStat</td>
+                                <td>
+                                    <div class="stat-bar-container">
+                                        <div class="stat-bar" style="width: @($"{Model.pokemonList.ElementAt(2).defenseBar}%")"></div>
+                                    </div>
+                                </td>
+                                <td>@Model.pokemonList.ElementAt(2).defenseStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(2).defenseStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Sp. Atk</th>
+                                <td>@Model.pokemonList.ElementAt(2).spAtkStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width:@Model.pokemonList.ElementAt(2).spAtkBar"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(2).spAtkStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(2).spAtkStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Sp. Def</th>
+                                <td>@Model.pokemonList.ElementAt(2).spDefStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width:@Model.pokemonList.ElementAt(2).spDefBar"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(2).spDefStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(2).spDefStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Speed</th>
+                                <td>@Model.pokemonList.ElementAt(2).speedStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width:@Model.pokemonList.ElementAt(2).speedBar"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(2).speedStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(2).speedStatMax</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="panel-4" class="sliding-info" style="left: 1251px; width: 450px; height: 75%">
+                <p class="name-container">@Model.pokemonList.ElementAt(3).name</p>
+                <p class="type-container" style="top: 3%; left: 5%; transform: translateX(-50%)">@Model.pokemonList.ElementAt(3).type.ToUpper()</p>
+                <p class="type-container" style="top: 3%; left: 90%; transform: translateX(-50%)">No.@Model.pokemonList.ElementAt(3).number</p>
+                <p class="detail-container" style="top: 20%; left: 0%">Species: @Model.pokemonList.ElementAt(3).species</p>
+                <p class="detail-container" style="top: 30%; left: 3%">Height: @Model.pokemonList.ElementAt(3).height</p>
+                <p class="detail-container" style="top: 40%; left: 6%">Ev Yield: @Model.pokemonList.ElementAt(3).evYield</p>
+                <p class="detail-container" style="top: 20%; left: 50%">Ability: @Model.pokemonList.ElementAt(3).ability</p>
+                <p class="detail-container" style="top: 30%; left: 53%">Weight: @Model.pokemonList.ElementAt(3).weight</p>
+                <p class="detail-container" style="top: 40%; left: 56%">Growth Rate: @Model.pokemonList.ElementAt(3).growthRate</p>
+                <div class="stat-container">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>HP</th>
+                                <td>@Model.pokemonList.ElementAt(3).hpStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width: @($"{Model.pokemonList.ElementAt(3).hpBar}%")"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(3).hpStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(3).hpStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Attack</th>
+                                <td>@Model.pokemonList.ElementAt(3).attackStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width: @($"{Model.pokemonList.ElementAt(3).attackBar}%")"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(3).attackStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(3).attackStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Defense</th>
+                                <td>@Model.pokemonList.ElementAt(3).defenseStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width: @($"{Model.pokemonList.ElementAt(3).defenseBar}%")"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(3).defenseStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(3).defenseStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Sp. Atk</th>
+                                <td>@Model.pokemonList.ElementAt(3).spAtkStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width:@Model.pokemonList.ElementAt(3).spAtkBar"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(3).spAtkStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(3).spAtkStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Sp. Def</th>
+                                <td>@Model.pokemonList.ElementAt(3).spDefStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width:@Model.pokemonList.ElementAt(3).spDefBar"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(3).spDefStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(3).spDefStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Speed</th>
+                                <td>@Model.pokemonList.ElementAt(3).speedStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width:@Model.pokemonList.ElementAt(3).speedBar"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(3).speedStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(3).speedStatMax</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="panel-5" class="sliding-info" style="left: 1737px; width: 450px; height: 75%">
+                <p class="name-container">@Model.pokemonList.ElementAt(4).name</p>
+                <p class="type-container" style="top: 3%; left: 5%; transform: translateX(-50%)">@Model.pokemonList.ElementAt(4).type.ToUpper()</p>
+                <p class="type-container" style="top: 3%; left: 90%; transform: translateX(-50%)">No.@Model.pokemonList.ElementAt(4).number</p>
+                <p class="detail-container" style="top: 20%; left: 0%">Species: @Model.pokemonList.ElementAt(4).species</p>
+                <p class="detail-container" style="top: 30%; left: 3%">Height: @Model.pokemonList.ElementAt(4).height</p>
+                <p class="detail-container" style="top: 40%; left: 6%">Ev Yield: @Model.pokemonList.ElementAt(4).evYield</p>
+                <p class="detail-container" style="top: 20%; left: 50%">Ability: @Model.pokemonList.ElementAt(4).ability</p>
+                <p class="detail-container" style="top: 30%; left: 53%">Weight: @Model.pokemonList.ElementAt(4).weight</p>
+                <p class="detail-container" style="top: 40%; left: 56%">Growth Rate: @Model.pokemonList.ElementAt(4).growthRate</p>
+                <div class="stat-container">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>HP</th>
+                                <td>@Model.pokemonList.ElementAt(4).hpStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width: @($"{Model.pokemonList.ElementAt(4).hpBar}%")"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(4).hpStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(4).hpStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Attack</th>
+                                <td>@Model.pokemonList.ElementAt(4).attackStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width: @($"{Model.pokemonList.ElementAt(4).attackBar}%")"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(4).attackStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(4).attackStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Defense</th>
+                                <td>@Model.pokemonList.ElementAt(4).defenseStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width: @($"{Model.pokemonList.ElementAt(4).defenseBar}%")"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(4).defenseStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(4).defenseStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Sp. Atk</th>
+                                <td>@Model.pokemonList.ElementAt(4).spAtkStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width:@Model.pokemonList.ElementAt(4).spAtkBar"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(4).spAtkStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(4).spAtkStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Sp. Def</th>
+                                <td>@Model.pokemonList.ElementAt(4).spDefStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width:@Model.pokemonList.ElementAt(4).spDefBar"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(4).spDefStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(4).spDefStatMax</td>
+                            </tr>
+                            <tr>
+                                <th>Speed</th>
+                                <td>@Model.pokemonList.ElementAt(4).speedStat</td>
+                                <td><div class="stat-bar-container"><div class="stat-bar" style="width:@Model.pokemonList.ElementAt(4).speedBar"></div></div></td>
+                                <td>@Model.pokemonList.ElementAt(4).speedStatMin</td>
+                                <td>@Model.pokemonList.ElementAt(4).speedStatMax</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @for (var i = 5; i < Model.idList.Count; i++)
+            {
+                <div id="@Model.idList.ElementAt(i)" class="sliding-info" style="left: -600px; width: 450px; height: 75%">
+                    <p class="name-container">@Model.pokemonList.ElementAt(i).name</p>
+                    <p class="type-container" style="top: 3%; left: 5%; transform: translateX(-50%)">@Model.pokemonList.ElementAt(i).type.ToUpper()</p>
+                    <p class="type-container" style="top: 3%; left: 90%; transform: translateX(-50%)">No.@Model.pokemonList.ElementAt(i).number</p>
+                    <p class="detail-container" style="top: 20%; left: 0%">Species: @Model.pokemonList.ElementAt(i).species</p>
+                    <p class="detail-container" style="top: 30%; left: 3%">Height: @Model.pokemonList.ElementAt(i).height</p>
+                    <p class="detail-container" style="top: 40%; left: 6%">Ev Yield: @Model.pokemonList.ElementAt(i).evYield</p>
+                    <p class="detail-container" style="top: 20%; left: 50%">Ability: @Model.pokemonList.ElementAt(i).ability</p>
+                    <p class="detail-container" style="top: 30%; left: 53%">Weight: @Model.pokemonList.ElementAt(i).weight</p>
+                    <p class="detail-container" style="top: 40%; left: 56%">Growth Rate: @Model.pokemonList.ElementAt(i).growthRate</p>
+                    <div class="stat-container">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <th>HP</th>
+                                    <td>@Model.pokemonList.ElementAt(i).hpStat</td>
+                                    <td><div class="stat-bar-container"><div class="stat-bar" style="width: @($"{Model.pokemonList.ElementAt(i).hpBar}%")"></div></div></td>
+                                    <td>@Model.pokemonList.ElementAt(i).hpStatMin</td>
+                                    <td>@Model.pokemonList.ElementAt(i).hpStatMax</td>
+                                </tr>
+                                <tr>
+                                    <th>Attack</th>
+                                    <td>@Model.pokemonList.ElementAt(i).attackStat</td>
+                                    <td><div class="stat-bar-container"><div class="stat-bar" style="width: @($"{Model.pokemonList.ElementAt(i).attackBar}%")"></div></div></td>
+                                    <td>@Model.pokemonList.ElementAt(i).attackStatMin</td>
+                                    <td>@Model.pokemonList.ElementAt(i).attackStatMax</td>
+                                </tr>
+                                <tr>
+                                    <th>Defense</th>
+                                    <td>@Model.pokemonList.ElementAt(i).defenseStat</td>
+                                    <td><div class="stat-bar-container"><div class="stat-bar" style="width: @($"{Model.pokemonList.ElementAt(i).defenseBar}%")"></div></div></td>
+                                    <td>@Model.pokemonList.ElementAt(i).defenseStatMin</td>
+                                    <td>@Model.pokemonList.ElementAt(i).defenseStatMax</td>
+                                </tr>
+                                <tr>
+                                    <th>Sp. Atk</th>
+                                    <td>@Model.pokemonList.ElementAt(i).spAtkStat</td>
+                                    <td><div class="stat-bar-container"><div class="stat-bar" style="width:@Model.pokemonList.ElementAt(i).spAtkBar"></div></div></td>
+                                    <td>@Model.pokemonList.ElementAt(i).spAtkStatMin</td>
+                                    <td>@Model.pokemonList.ElementAt(i).spAtkStatMax</td>
+                                </tr>
+                                <tr>
+                                    <th>Sp. Def</th>
+                                    <td>@Model.pokemonList.ElementAt(i).spDefStat</td>
+                                    <td><div class="stat-bar-container"><div class="stat-bar" style="width:@Model.pokemonList.ElementAt(i).spDefBar"></div></div></td>
+                                    <td>@Model.pokemonList.ElementAt(i).spDefStatMin</td>
+                                    <td>@Model.pokemonList.ElementAt(i).spDefStatMax</td>
+                                </tr>
+                                <tr>
+                                    <th>Speed</th>
+                                    <td>@Model.pokemonList.ElementAt(i).speedStat</td>
+                                    <td><div class="stat-bar-container"><div class="stat-bar" style="width:@Model.pokemonList.ElementAt(i).speedBar"></div></div></td>
+                                    <td>@Model.pokemonList.ElementAt(i).speedStatMin</td>
+                                    <td>@Model.pokemonList.ElementAt(i).speedStatMax</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    var idList = JSON.parse('@Html.Raw(Json.Serialize(Model.idList))');
+    $(document).ready(function () {
+
+
+
+        function revertCooldownColor() {
+            $('.cooldown-div').css('background-color', 'rgb(0, 255, 0)');
+        }
+
+        $('.background-container').on('scroll', function () {
+            $(".header").css("opacity", 1 - $('.background-container').scrollTop() / 250);
+        });
+
+        $('.hamburger').on('click', function () {
+            $('.menu').css('visibility', 'visible');
+            $('.menu').css('animation-name', 'menu-fade-in');
+            $('.menu-backdrop').css('visibility', 'visible');
+            $('.menu-backdrop').css('animation-name', 'menu-backdrop-fade-in');
+        });
+
+        $('.exit-button').on('click', function () {
+            $('.menu').css('animation-name', 'menu-fade-out');
+            $('.menu-backdrop').css('animation-name', 'menu-backdrop-fade-out');
+            setTimeout(function () {
+                $('.menu').css('visibility', 'hidden');
+                $('.menu-backdrop').css('visibility', 'hidden');
+            }, 2000);
+        });
+
+        $('#pokemon-button').on('click', function () {
+            $('#move-container').css('visibility', 'hidden');
+            $('#ability-container').css('visibility', 'hidden');
+            $('#pokemon-container').css('visibility', 'visible');
+        });
+
+        $('#move-button').on('click', function () {
+            $('#pokemon-container').css('visibility', 'hidden');
+            $('#ability-container').css('visibility', 'hidden');
+            $('#move-container').css('visibility', 'visible');
+        });
+
+        $('#ability-button').on('click', function () {
+            $('#pokemon-container').css('visibility', 'hidden');
+            $('#move-container').css('visibility', 'hidden');
+            $('#ability-container').css('visibility', 'visible');
+        });
+
+        $(document).keydown(function (e) {
+            if (e.which == '37') {
+                if ($('.cooldown-div').css('background-color') == 'rgb(0, 255, 0)') {
+                    $('.cooldown-div').css('background-color', 'rgb(255, 0, 0)');
+                    setTimeout(function () {
+                        revertCooldownColor();
+                    }, 600);
+                    var centerId;
+                    $(".sliding-info").each(function (index) {
+                        if ($(this).css('left') == '1737px') {
+                            $(this).css('animation-name', 'slide-left-from-offscreen');
+                        }
+                        else if ($(this).css('left') == '1251px') {
+                            $(this).css('animation-name', 'slide-left-to-center');
+                            $(this).children(".detail-container").css('animation-name', 'show-info');
+                            $(this).children(".type-container").css('animation-name', 'show-info');
+                            $(this).children(".stat-container").css('animation-name', 'show-info');
+                        }
+                        else if ($(this).css('left') == '683px') {
+                            centerId = $(this).attr('id');
+                            $(this).css('animation-name', 'slide-left-from-center');
+                            $(this).children(".detail-container").css('animation-name', 'hide-info');
+                            $(this).children(".type-container").css('animation-name', 'hide-info');
+                            $(this).children(".stat-container").css('animation-name', 'hide-info');
+                        }
+                        else if ($(this).css('left') == '115px') {
+                            $(this).css('animation-name', 'slide-left-to-offscreen');
+                        }
+                        else if ($(this).css('left') == '-371px') {
+                            $(this).css('animation-name', 'slide-to-pile');
+                        }
+                    });
+                    var dataToPost = {};
+                    dataToPost.centerPanel = centerId;
+                    dataToPost.panelList = idList;
+                    $.post("@Url.Action("GetRightPanel", "Home")", { model: dataToPost }, function (data) {
+                        $('#' + data.slate).css('animation-name', 'slide-to-most-right');
+                    });
+                }
+            }
+            if (e.which == '39') {
+                if ($('.cooldown-div').css('background-color') == 'rgb(0, 255, 0)') {
+                    $('.cooldown-div').css('background-color', 'rgb(255, 0, 0)');
+                    setTimeout(function () {
+                        revertCooldownColor();
+                    }, 600);
+                    var centerId;
+                    $(".sliding-info").each(function (index) {
+                        if ($(this).css('left') == '-371px') {
+                            $(this).css('animation-name', 'slide-right-from-offscreen');
+                        }
+                        else if ($(this).css('left') == '115px') {
+                            $(this).css('animation-name', 'slide-right-to-center');
+                            $(this).children(".detail-container").css('animation-name', 'show-info');
+                            $(this).children(".type-container").css('animation-name', 'show-info');
+                            $(this).children(".stat-container").css('animation-name', 'show-info');
+                        }
+                        else if ($(this).css('left') == '683px') {
+                            centerId = $(this).attr('id');
+                            $(this).css('animation-name', 'slide-right-from-center');
+                            $(this).children(".detail-container").css('animation-name', 'hide-info');
+                            $(this).children(".type-container").css('animation-name', 'hide-info');
+                            $(this).children(".stat-container").css('animation-name', 'hide-info');
+                        }
+                        else if ($(this).css('left') == '1251px') {
+                            $(this).css('animation-name', 'slide-right-to-offscreen');
+                        }
+                        else if ($(this).css('left') == '1737px') {
+                            $(this).css('animation-name', 'slide-to-pile');
+                        }
+                    });
+                    var dataToPost = {};
+                    dataToPost.centerPanel = centerId;
+                    dataToPost.panelList = idList;
+                    $.post("@Url.Action("GetLeftPanel", "Home")", { model: dataToPost }, function (data) {
+                        $('#' + data.slate).css('animation-name', 'slide-to-most-left');
+                    });
+                }
+            }
+        });
+    });
+</script>
